@@ -133,7 +133,7 @@ def tune_xgb_params_randomized(estimator_cls,
                                strat_folds: KFold,
                                train: np.ndarray,
                                n_iter: int = 20,
-                               verbosity_level: int = 10,
+                               verbosity_level: int = 0,
                                **kwargs):
     """
     :param estimator_cls:
@@ -210,6 +210,7 @@ def tune_xgb_params_incremental(estimator_cls,
                                 subsample_max: float = 1.0,
                                 subsample_min: float = 0.6,
                                 subsample_step: float = 0.1,
+                                verbosity_level: int = 10,
                                 **kwargs) -> Tuple[dict, List[Tuple[dict, float]]]:
     """
     Tunes XGB parameters incrementally as suggested on
@@ -329,6 +330,7 @@ def tune_xgb_params(label: np.ndarray,
                     lower_learning_rate: float = 0.01,
                     n_jobs: int = None,
                     random_state: int = None,
+                    verbosity_level: int = 10,
                     **kwargs) -> Tuple[dict, List[Tuple[dict, float]]]:
     """
     :param label:
@@ -375,6 +377,7 @@ def tune_xgb_params(label: np.ndarray,
     """
     assert lower_learning_rate < init_learning_rate, 'Final learning rate should be lower than the initial rate.'
     assert strategy in ['incremental', 'randomized'], 'Tuning strategy must be in {incremental, randomized}.'
+    print("Start: search_best_parameter")
     cur_xgb_params = {
         'colsample_bytree': init_colsample_bytree,
         'gamma': init_gamma,
@@ -384,7 +387,8 @@ def tune_xgb_params(label: np.ndarray,
         'nthread': n_jobs or os.cpu_count(),
         'objective': objective,
         'scale_pos_weight': 1,
-        'subsample': init_subsample
+        'subsample': init_subsample,
+        'silent': True
     }
     estimator_cls_map = {
         'binary': xgb.XGBClassifier,
@@ -435,6 +439,7 @@ def tune_xgb_params(label: np.ndarray,
             n_jobs=n_jobs,
             params=cur_xgb_params,
             strat_folds=strat_folds,
+            verbosity_level=verbosity_level,
             train=train,
             **kwargs
         )
