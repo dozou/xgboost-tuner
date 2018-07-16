@@ -402,7 +402,7 @@ def tune_xgb_params(label: np.ndarray,
     if random_state is not None:
         cur_xgb_params['random_state'] = random_state
 
-    strat_folds = KFold(n_splits=cv_folds, random_state=random_state)
+    strat_folds = KFold(n_splits=cv_folds, random_state=random_state, shuffle=True)
     init_num_estimators, init_score = tune_num_estimators(
         metric=metric_xgb,
         label=label,
